@@ -5,6 +5,33 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var helmet = require('helmet');
 
+var session = require('express-session');
+var passport = require('passport');
+var GitHubStrategy = require('passport-github2').Strategy;
+
+var GITHUB_CLIENT_ID = '574fbb69adece9f0accc';
+var GITHUB_CLIENT_SECRET = 'b975bce467f39ce2852d6764497c5d15b7e9adcd';
+
+passport.serializeUser(function (user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function (obj, done) {
+  done(null, obj);
+});
+
+passport.use(new GitHubStrategy({
+  clientID: GITHUB_CLIENT_ID,
+  clientSecret: GITHUB_CLIENT_SECRET,
+  callbackURL: 'http://localhost:8000/auth/github/callback'
+},
+  function (accessToken, refreshToken, profile, done) {
+    process.nextTick(function () {
+      return done(null, profile);
+    });
+  }
+));
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var photosRouter = require('./routes/photos');
@@ -22,17 +49,48 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({ secret: 'dbb8cd7cca99c4df', resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/users', ensureAuthenticated, usersRouter);
 app.use('/photos', photosRouter);
 
+app.get('/auth/github',
+  passport.authenticate('github', { scope: ['user:email'] }),
+  function (req, res) {
+  });
+
+app.get('/auth/github/callback',
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  function (req, res) {
+    res.redirect('/');
+  });
+
+app.get('/login', function (req, res) {
+  res.render('login');
+});
+
+app.get('/logout', function (req, res) {
+  req.logout();
+  res.redirect('/');
+});
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/login');
+};
+
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
