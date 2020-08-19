@@ -6,9 +6,18 @@
 //   ${dc.effectiveDamage(100, 50, 30)}
 //   </p>`;
 
-import crypto from 'crypto';
-const root = document.getElementById('root');
-root.innerHTML =
-  `<p>
-  ${crypto.randomBytes(8).toString('hex')}
-  </p>`;
+// import crypto from 'crypto';
+// const root = document.getElementById('root');
+// root.innerHTML =
+//   `<p>
+//   ${crypto.randomBytes(8).toString('hex')}
+//   </p>`;
+
+import $ from 'jquery';
+const block = $('#block');
+const scalingButton = $('#scaling-button');
+
+scalingButton.click(() => {
+  block.animate({ width: '200px', height: '200px' }, 2000);
+  block.animate({ width: '100px', height: '100px' }, 2000);
+});
