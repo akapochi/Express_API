@@ -108,7 +108,6 @@ __webpack_require__.r(__webpack_exports__);
 
 var block = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#block');
 var scalingButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#scaling-button');
-var movingButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#moving-button');
 scalingButton.click(function () {
   block.animate({
     width: '200px',
@@ -119,6 +118,7 @@ scalingButton.click(function () {
     height: '100px'
   }, 2000);
 });
+var movingButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#moving-button');
 movingButton.click(function () {
   block.animate({
     'marginLeft': '500px'
@@ -127,6 +127,12 @@ movingButton.click(function () {
     'marginLeft': '20px'
   }, 1000);
 });
+var loadavg = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#loadavg');
+setInterval(function () {
+  jquery__WEBPACK_IMPORTED_MODULE_0___default.a.get('/server-status', {}, function (data) {
+    loadavg.text(data.loadavg.toString());
+  });
+}, 1000);
 
 /***/ }),
 /* 1 */
