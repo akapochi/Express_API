@@ -88,3 +88,13 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+var io = require('socket.io')(server);
+var os = require('os');
+
+io.on('connection', (socket) => {
+  setInterval(() => {
+    socket.emit('server-status', { loadavg: os.loadavg() });
+    console.log('server-status event emitted');
+  }, 10);
+});
