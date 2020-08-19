@@ -21,3 +21,10 @@ scalingButton.click(() => {
   block.animate({ width: '200px', height: '200px' }, 2000);
   block.animate({ width: '100px', height: '100px' }, 2000);
 });
+
+const movingButton = $('#moving-button');
+
+movingButton.click(() => {
+  block.animate({ 'marginLeft': '500px' }, 500);
+  block.animate({ 'marginLeft': '20px' }, 1000);
+});
